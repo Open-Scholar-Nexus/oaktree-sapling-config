@@ -3,8 +3,10 @@ version: 1
 project:
   exports:
   - format: typst
-  - format: pdf
-    template: arxiv_two_column
+    id: typst-pdf
+  downloads:
+  - id: typst-pdf
+    title: PDF (Typst template)
   # plugins:
   # - ./github-issues.mjs # might need https link
 
