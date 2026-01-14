@@ -50,8 +50,13 @@ jobs:
           cache-downloads: true
 
       - name: Install paper-specific packages
-        if: hashFiles('${{ inputs.paper-environment-file }}') != ''
-        run: micromamba install --file ${{ inputs.paper-environment-file }} --yes
+        run: |
+          if [ -f "${{ inputs.paper-environment-file }}" ]; then
+            echo "Found ${{ inputs.paper-environment-file }}, installing paper-specific packages..."
+            micromamba install --file ${{ inputs.paper-environment-file }} --yes
+          else
+            echo "No ${{ inputs.paper-environment-file }} found, skipping paper-specific packages"
+          fi
         shell: micromamba-shell {0}
 
       - name: MyST build HTML
