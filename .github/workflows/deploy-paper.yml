@@ -3,16 +3,16 @@ name: Deploy MyST Paper
 on:
   workflow_call:
     inputs:
-      environment-file:
-        description: 'Path to conda environment file'
+      paper-environment-file:
+        description: "Name of the paper-specific environment file (optional)"
         required: false
         type: string
-        default: 'environment.yml'
+        default: "paper-environment.yml"
       base_url:
-        description: 'Determines where the website is served from, including CSS & JS assets (needed for MyST)'
+        description: "Determines where the website is served from, including CSS & JS assets (needed for MyST)"
         required: false
         type: string
-        default: '/${{ github.event.repository.name }}'
+        default: "/${{ github.event.repository.name }}"
 
 env:
   BASE_URL: ${{ inputs.base_url }}
@@ -37,13 +37,22 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v3
 
-      - name: Setup Micromamba
+      - name: Fetch base environment file
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/pollomarzo/scholar-nexus-paper-config/main/environment.yml -o base-environment.yml
+
+      - name: Setup Micromamba with base environment
         uses: mamba-org/setup-micromamba@v2
         with:
-          environment-file: ${{ inputs.environment-file }}
+          environment-file: base-environment.yml
           generate-run-shell: true
           cache-environment: true
           cache-downloads: true
+
+      - name: Install paper-specific packages
+        if: hashFiles('${{ inputs.paper-environment-file }}') != ''
+        run: micromamba install --file ${{ inputs.paper-environment-file }} --yes
+        shell: micromamba-shell {0}
 
       - name: MyST build HTML
         run: myst build --html
