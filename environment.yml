@@ -10,4 +10,4 @@ dependencies:
 - mystmd
 - pyyaml
 - typst
-- texlive-core
+- tectonic
