@@ -59,12 +59,12 @@ jobs:
           fi
         shell: micromamba-shell {0}
 
-      - name: MyST build HTML
-        run: myst build --html
-        shell: micromamba-shell {0}
-
       - name: MyST build exports (PDF, Typst)
         run: myst build --all
+        shell: micromamba-shell {0}
+
+      - name: MyST build HTML
+        run: myst build --html
         shell: micromamba-shell {0}
 
       - name: Upload artifact
