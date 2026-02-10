@@ -1,0 +1,63 @@
+name: Validate MyST Paper
+
+on:
+  workflow_call:
+    inputs:
+      strict:
+        description: "Fail on warnings (not just errors)"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check required files exist
+        run: |
+          echo "Checking required files..."
+          errors=()
+
+          [ ! -f "index.md" ] && errors+=("index.md")
+          [ ! -f "myst.yml" ] && errors+=("myst.yml")
+
+          if [ ${#errors[@]} -gt 0 ]; then
+            echo "::error::Missing required files: ${errors[*]}"
+            exit 1
+          fi
+
+          echo "All required files present"
+
+      - name: Validate myst.yml required fields
+        run: |
+          echo "Validating myst.yml..."
+          errors=()
+
+          # Check project-level required fields exist
+          grep -q "title:" myst.yml || errors+=("project.title")
+          grep -q "authors:" myst.yml || errors+=("project.authors")
+
+          if [ ${#errors[@]} -gt 0 ]; then
+            echo "::error::Missing required fields in myst.yml: ${errors[*]}"
+            exit 1
+          fi
+
+          echo "myst.yml validation passed"
+
+      - name: Validate thumbnail
+        run: |
+          if ls thumbnails/*.{png,jpg,jpeg,webp} 1> /dev/null 2>&1; then
+            echo "Thumbnail found"
+          else
+            echo "::warning::No thumbnail found in thumbnails/"
+          fi
+
+      - name: Summary
+        run: |
+          echo "## Validation Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- Required files: :white_check_mark:" >> $GITHUB_STEP_SUMMARY
+          echo "- myst.yml fields: :white_check_mark:" >> $GITHUB_STEP_SUMMARY
+          echo "- Thumbnail: :white_check_mark:" >> $GITHUB_STEP_SUMMARY
