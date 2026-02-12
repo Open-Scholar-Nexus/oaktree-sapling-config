@@ -16,6 +16,7 @@ on:
 
 env:
   BASE_URL: ${{ inputs.base_url }}
+  BASE_ENV_VERSION: v0.1.0
 
 permissions:
   contents: read
@@ -39,7 +40,7 @@ jobs:
 
       - name: Fetch base environment file
         run: |
-          curl -fsSL https://raw.githubusercontent.com/pollomarzo/scholar-nexus-paper-config/main/environment.yml -o base-environment.yml
+          curl -fsSL https://raw.githubusercontent.com/pollomarzo/scholar-nexus-paper-config/${{ env.BASE_ENV_VERSION }}/environment.yml -o base-environment.yml
 
       - name: Setup Micromamba with base environment
         uses: mamba-org/setup-micromamba@v2
