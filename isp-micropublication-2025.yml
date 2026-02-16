@@ -9,7 +9,6 @@ project:
   exports:
   - format: typst
     id: typst-pdf
-    title: PDF export
     articles:
     - file: index.md
       level: 0
